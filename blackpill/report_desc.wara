@@ -1,0 +1,21 @@
+[[usagePage]]
+id = 0xFF00
+name = 'Vendor-Defined'
+  [[usagePage.usage]]
+  id = 1
+  name = 'Demo USB'
+  types = ['CA']
+  
+  [[usagePage.usage]]
+  id = 2
+  name = 'LED Delay'
+  types = ['Sel', 'OOC', 'MC']
+
+[[applicationCollection]]
+usage = ['Vendor-Defined', 'Demo USB']
+    [[applicationCollection.inputReport]]
+     [[applicationCollection.inputReport.variableItem]]
+        usage = ['Vendor-Defined', 'LED Delay']
+        sizeInBits = 8
+
+      
