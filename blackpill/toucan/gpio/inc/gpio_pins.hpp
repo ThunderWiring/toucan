@@ -1,7 +1,6 @@
 #ifndef __TOUCAN_GPIO_PINS_H__
 #define __TOUCAN_GPIO_PINS_H__
 
-#include "at32f403a_407_conf.h"
 #include "at32f403a_407.h"
 
 /** Number of supported GPIO Pins. This number varies per board.
