@@ -8,26 +8,23 @@
 #include "board.h"
 
 #include "toucan/usb/hid_usb_lib.hpp"
+#include "toucan/LCD/inc/spi_lcd.hpp"
 
 extern uint8_t toggle_speed_from_host;
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// usbd_core_type usb_core_dev;
 uint8_t report_buf[USBD_CUSTOM_IN_MAXPACKET_SIZE];
 CustomUSBHID usb = CustomUSBHID();
 
-int main(void)
-{
+int main(void) {
   system_clock_config();
-
   delay_init();
-
   button_init();
   button_exint_init();
   led_init();
-
+  
   usb.initUSB();
   usb.connect();
   

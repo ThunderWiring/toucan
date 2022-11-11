@@ -29,10 +29,12 @@ SRCS	=	\
 $(wildcard $(ROOT_PATH)/*.c)	\
 $(wildcard $(ROOT_PATH)/*.cpp)	\
 $(wildcard $(ROOT_PATH)/toucan/usb/*.cpp)	\
+$(wildcard $(ROOT_PATH)/toucan/LCD/src/*.cpp)	\
 
 CXX_LOCAL_LIBS	=	\
 -I$(ROOT_PATH)	\
 -I$(ROOT_PATH)/toucan/usb	\
+-I$(ROOT_PATH)/toucan/LCD/inc	\
 
 ####################################################
 # Firmaware - BSP (Board Support Pack)
