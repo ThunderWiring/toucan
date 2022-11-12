@@ -43,6 +43,10 @@ void RoundLCD::initLCD() {
   init_lcd_driver();
 }
 
+void RoundLCD::setBackLight(uint16_t brightness) {
+  bl.analogWrite(brightness);
+}
+
 void RoundLCD::init_lcd_driver() {
   send_command(0xEF);
 	send_command(0xEB);

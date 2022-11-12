@@ -49,6 +49,8 @@ class RoundLCD {
     /**
      * @brief Initializes the LCD driver for preparation to display content.
      */
-    void initLCD();    
+    void initLCD();   
+
+    void setBackLight(uint16_t brightness);
 };
 #endif /* __SPI_LCD_H__ */
