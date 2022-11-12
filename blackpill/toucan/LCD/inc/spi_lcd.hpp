@@ -18,13 +18,6 @@
 #define LCD_PIN_BL  PB13 // PB13 back light - pwm (or connected directly to the 3.3v)
 
 /**
- * @brief The controller can send either data or command, 
- * and this config is controlled by the DC pin
- */
-typedef enum  {COMMAND = 0, DATA = 1} LCDDataType;
-typedef enum {HORIZONTAL = 0, VERTICAL = 1} LCDOrientation;
-
-/**
  * @brief 1.28 inch round screen
  * 
  */
