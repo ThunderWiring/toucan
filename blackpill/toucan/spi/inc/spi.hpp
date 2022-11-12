@@ -28,25 +28,24 @@ class SPI {
     spi_type* spiX;
 
     void setDataMode(uint8_t dataMode);
-    void set_spi_clock(spi_type* spi_x);
-    void setClock(uint32_t clock);
+    void set_spi_clock();
   public:
-    SPI(SPIMode mode);
+    SPI(spi_type* spi_x, SPIMode mode);
 
     void init(
-      spi_type* spi_x,
+      SPIMode mode,
       spi_transmission_mode_type transmission_mode,
       spi_master_slave_mode_type master_slave_mode,
       spi_first_bit_type first_bit_transmission,
       spi_frame_bit_num_type frame_bit_num,
-      spi_cs_mode_type cs_mode_selection
+      spi_cs_mode_type cs_mode_selection,
+      spi_mclk_freq_div_type clk_freq_div
     );
 
     /**
      * @brief Enables the clock and setup the ends for communication.
      */
     void begin();
-    void setClockDivider(uint32_t clk_div);
     uint8_t transfer(uint8_t data);
 };
 

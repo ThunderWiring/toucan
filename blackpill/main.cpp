@@ -24,6 +24,11 @@ int main(void) {
   button_init();
   button_exint_init();
   led_init();
+
+  RoundLCD lcd = RoundLCD(LCD_1IN28_HEIGHT, LCD_1IN28_WIDTH);
+  lcd.initLCD();
+  lcd.setBackLight(1000);
+  lcd.clearDisplay();
   
   usb.initUSB();
   usb.connect();

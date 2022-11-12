@@ -1,6 +1,5 @@
 #include "gpio_pins.hpp"
 
-
 GPIOPin::GPIOPin(PinType p, PinMode mode): pin(p), pin_mode(mode) {
   if (IS_VALID_PIN(p)) {
     pin_info = PIN_MAP[p];

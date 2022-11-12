@@ -32,6 +32,7 @@ class RoundLCD {
   private:
     GPIOPin din, clk, cs, dc, rst, bl;
     SPI spi;
+    uint16_t height, width;
 
     void init_spi();
     void reset();
@@ -41,10 +42,12 @@ class RoundLCD {
 
     /** writes a byte to the LCD driver */
     void send_8bit_data(uint8_t data);
+    void send_16bit_data(uint16_t data);
 
     void init_lcd_driver();
+    void set_cursor(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end);
   public:
-    RoundLCD();
+    RoundLCD(uint16_t h, uint16_t w);
     
     /**
      * @brief Initializes the LCD driver for preparation to display content.
@@ -52,5 +55,8 @@ class RoundLCD {
     void initLCD();   
 
     void setBackLight(uint16_t brightness);
+
+    /** Clears all pixels. */
+    void clearDisplay();
 };
 #endif /* __SPI_LCD_H__ */

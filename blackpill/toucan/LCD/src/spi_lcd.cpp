@@ -1,18 +1,28 @@
 #include "spi_lcd.hpp"
 
-RoundLCD::RoundLCD() : din(GPIOPin(LCD_PIN_DIN, OUTPUT)),
-                       clk(GPIOPin(LCD_PIN_CLK, OUTPUT)),
-                       cs(GPIOPin(LCD_PIN_CS, OUTPUT)),
-                       dc(GPIOPin(LCD_PIN_DC, OUTPUT)),
-                       rst(GPIOPin(LCD_PIN_RST, OUTPUT)),
-                       bl(GPIOPin(LCD_PIN_BL, PWM)),
-                       spi(SPI(SPI_MODE3)) { 
+RoundLCD::RoundLCD(uint16_t h, uint16_t w) : 
+      din(GPIOPin(LCD_PIN_DIN, OUTPUT_AF_PP)), // not used
+      clk(GPIOPin(LCD_PIN_CLK, OUTPUT_AF_PP)), // not used
+      cs(GPIOPin(LCD_PIN_CS, OUTPUT)),
+      dc(GPIOPin(LCD_PIN_DC, OUTPUT)),
+      rst(GPIOPin(LCD_PIN_RST, OUTPUT)),
+      bl(GPIOPin(LCD_PIN_BL, PWM)),
+      spi(SPI(SPI1, SPI_MODE0)),
+      height(h),
+      width(w) { 
   bl.PWMWrite(140);
   init_spi();
 }
 
 void RoundLCD::init_spi() {
-  spi.setClockDivider(0x4);
+  spi.init(
+    SPI_MODE0,
+    SPI_TRANSMIT_FULL_DUPLEX,
+    SPI_MODE_MASTER,
+    SPI_FIRST_BIT_MSB,
+    SPI_FRAME_8BIT,
+    SPI_CS_SOFTWARE_MODE,
+    SPI_MCLK_DIV_8);
   spi.begin();
 }
 
@@ -38,6 +48,14 @@ void RoundLCD::send_8bit_data(uint8_t data) {
   cs.digitalWrite(HIGH);
 }
 
+void RoundLCD::send_16bit_data(uint16_t data) {
+  cs.digitalWrite(LOW);
+  dc.digitalWrite(HIGH);
+  spi.transfer(data >> 8);
+  spi.transfer(data);
+  cs.digitalWrite(HIGH);
+}
+
 void RoundLCD::initLCD() {
   reset();
   init_lcd_driver();
@@ -45,6 +63,33 @@ void RoundLCD::initLCD() {
 
 void RoundLCD::setBackLight(uint16_t brightness) {
   bl.analogWrite(brightness);
+}
+
+void RoundLCD::clearDisplay() {
+  uint16_t i,j;    
+  set_cursor(0, 0, width - 1,height - 1);
+  for(i = 0; i < width; i++){
+    for(j = 0; j < height; j++){
+      send_16bit_data(0x001F);
+    }
+   }
+}
+
+void RoundLCD::set_cursor(
+  uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end) {
+  send_command(0x2a);
+  send_8bit_data(0x00);
+  send_8bit_data(x_start);
+  send_8bit_data(0x00);  
+  send_8bit_data(x_end);/*********Xend-1********/
+  
+  send_command(0x2b);
+  send_8bit_data(0x00);
+  send_8bit_data(y_start);
+  send_8bit_data(0x00);
+  send_8bit_data(y_end);
+
+  send_command(0x2c);
 }
 
 void RoundLCD::init_lcd_driver() {
@@ -271,7 +316,7 @@ void RoundLCD::init_lcd_driver() {
 	send_8bit_data(0x4E);
 	send_8bit_data(0x00);					
 	
-    send_command(0x98);			
+  send_command(0x98);			
 	send_8bit_data(0x3e);
 	send_8bit_data(0x07);
 
