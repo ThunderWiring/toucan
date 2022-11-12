@@ -11,12 +11,6 @@ DEFINES =	\
 -DAT32F403ACGU7	\
 -DAT_START_F403A_V1	\
 -DF_CPU=80000000L	\
-# -DARDUINO_AT32F403ACGxx \
-# -DF_PLL_CLOCK_SOURCE=2 \
-# -DF_PLL_MULT=CRM_PLL_MULT_60 \
-# -DF_PLL_OUTPUT_RANGE=CRM_PLL_OUTPUT_RANGE_GT72MHZ \
-# -DF_HEXT_DIV=CRM_HEXT_DIV_2 \
-# -DF_HSI_DIV=CRM_HICK48_DIV6 \
 
 WARNINGS = -Wall -Wunused -Wuninitialized
 MCU_FLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -O0  $(DEFINES)
@@ -36,16 +30,16 @@ SRCS	=	\
 $(wildcard $(ROOT_PATH)/*.c)	\
 $(wildcard $(ROOT_PATH)/*.cpp)	\
 $(wildcard $(ROOT_PATH)/toucan/usb/*.cpp)	\
-$(wildcard $(ROOT_PATH)/toucan/LCD/src/*.cpp)	\
-$(wildcard $(ROOT_PATH)/toucan/gpio/src/*.cpp)	\
-$(wildcard $(ROOT_PATH)/toucan/SPI/src/*.cpp)	\
+$(wildcard $(ROOT_PATH)/toucan/LCD/*.cpp)	\
+$(wildcard $(ROOT_PATH)/toucan/gpio/*.cpp)	\
+$(wildcard $(ROOT_PATH)/toucan/SPI/*.cpp)	\
 
 CXX_LOCAL_LIBS	=	\
 -I$(ROOT_PATH)	\
 -I$(ROOT_PATH)/toucan/usb	\
--I$(ROOT_PATH)/toucan/LCD/inc	\
--I$(ROOT_PATH)/toucan/gpio/inc	\
--I$(ROOT_PATH)/toucan/SPI/inc	\
+-I$(ROOT_PATH)/toucan/LCD	\
+-I$(ROOT_PATH)/toucan/gpio	\
+-I$(ROOT_PATH)/toucan/SPI	\
 
 ####################################################
 # Firmaware - BSP (Board Support Pack)

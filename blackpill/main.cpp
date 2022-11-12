@@ -7,8 +7,8 @@
 #include "custom_hid_desc.h"
 #include "board.h"
 
-#include "toucan/usb/hid_usb_lib.hpp"
-#include "toucan/LCD/inc/spi_lcd.hpp"
+#include "hid_usb_lib.hpp"
+#include "spi_lcd.hpp"
 
 extern uint8_t toggle_speed_from_host;
 #ifdef __cplusplus
