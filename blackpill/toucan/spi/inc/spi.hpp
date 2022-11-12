@@ -4,6 +4,15 @@
 #include "gpio_pins.hpp"
 #include "at32f403a_407.h"
 
+#define SPI_I2S_GET_FLAG(spix, SPI_I2S_FLAG) (spix->sts & SPI_I2S_FLAG)
+#define SPI_I2S_RXDATA(spix)                 (spix->dt)
+#define SPI_I2S_RXDATA_VOLATILE(spix)        do{ volatile uint16_t vn = SPI_I2S_RXDATA(spix); vn = vn; } while(0)
+#define SPI_I2S_TXDATA(spix, data)           (spix->dt = (data))
+#define SPI_I2S_WAIT_RX(spix)                do{ while (!SPI_I2S_GET_FLAG(spix, SPI_I2S_RDBF_FLAG)); } while(0)
+#define SPI_I2S_WAIT_TX(spix)                do{ while (!SPI_I2S_GET_FLAG(spix, SPI_I2S_TDBE_FLAG)); } while(0)
+#define SPI_I2S_WAIT_BUSY(spix)              do{ while (SPI_I2S_GET_FLAG(spix,  SPI_I2S_BF_FLAG));   } while(0)
+
+
 typedef enum
 {
     SPI_MODE0,
@@ -38,6 +47,7 @@ class SPI {
      */
     void begin();
     void setClockDivider(uint32_t clk_div);
+    uint8_t transfer(uint8_t data);
 };
 
 #endif /* __TOUCAN_SPI_H__ */

@@ -5,6 +5,7 @@
 #include "at32f403a_407_crm.h"
 #include "delay.h"
 #include "gpio_pins.hpp"
+#include "spi.hpp"
 
 #define LCD_1IN28_HEIGHT 240
 #define LCD_1IN28_WIDTH 240
@@ -30,8 +31,24 @@ typedef enum {HORIZONTAL = 0, VERTICAL = 1} LCDOrientation;
 class RoundLCD {
   private:
     GPIOPin din, clk, cs, dc, rst, bl;
+    SPI spi;
+
     void init_spi();
+    void reset();
+
+    /** writes a command to the LCD driver */
+    void send_command(uint8_t cmd);
+
+    /** writes a byte to the LCD driver */
+    void send_8bit_data(uint8_t data);
+
+    void init_lcd_driver();
   public:
     RoundLCD();
+    
+    /**
+     * @brief Initializes the LCD driver for preparation to display content.
+     */
+    void initLCD();    
 };
 #endif /* __SPI_LCD_H__ */

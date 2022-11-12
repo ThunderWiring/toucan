@@ -126,3 +126,11 @@ void SPI::setClock(uint32_t clock) {
     spi_init(spiX, &spi_init_struct);
     spi_enable(spiX, TRUE);
 }
+
+uint8_t SPI::transfer(uint8_t data) {
+  SPI_I2S_RXDATA_VOLATILE(spiX);
+    SPI_I2S_TXDATA(spiX, data);
+    SPI_I2S_WAIT_TX(spiX);
+    SPI_I2S_WAIT_BUSY(spiX);
+    return (uint8_t)SPI_I2S_RXDATA(spiX);
+}
