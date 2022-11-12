@@ -4,6 +4,98 @@ GPIOPin::GPIOPin(PinType p, PinMode mode): pin(p), pin_mode(mode) {
   if (IS_VALID_PIN(p)) {
     pin_info = PIN_MAP[p];
   }
+  init_pin();
+}
+
+void GPIOPin::init_pin() {
+  // TODO: add handling for analog (adc) and pwm modes
+  GPIOx_Init(
+    PIN_MAP[pin].GPIOx,
+    PIN_MAP[pin].GPIO_PINS_x,
+    pin_mode,
+    GPIO_DRIVE_STRENGTH_STRONGER
+  );
+}
+
+void GPIOPin::GPIOx_Init(
+    gpio_type* GPIOx,
+    uint16_t GPIO_Pin_x,
+    PinMode Mode,
+    gpio_drive_type GPIO_Drive_x
+) {
+    gpio_init_type gpio_init_struct;
+    crm_periph_clock_type CRM_GPIOx_PERIPH_CLOCK;
+
+    if(GPIOx == GPIOA)     CRM_GPIOx_PERIPH_CLOCK = CRM_GPIOA_PERIPH_CLOCK;
+    else if(GPIOx == GPIOB)CRM_GPIOx_PERIPH_CLOCK = CRM_GPIOB_PERIPH_CLOCK;
+    else if(GPIOx == GPIOC)CRM_GPIOx_PERIPH_CLOCK = CRM_GPIOC_PERIPH_CLOCK;
+    else if(GPIOx == GPIOD)CRM_GPIOx_PERIPH_CLOCK = CRM_GPIOD_PERIPH_CLOCK;
+#ifdef GPIOE
+    else if(GPIOx == GPIOE)CRM_GPIOx_PERIPH_CLOCK = CRM_GPIOE_PERIPH_CLOCK;
+#endif /*GPIOE*/
+#ifdef GPIOF
+    else if(GPIOx == GPIOF)CRM_GPIOx_PERIPH_CLOCK = CRM_GPIOF_PERIPH_CLOCK;
+#endif /*GPIOF*/
+#ifdef GPIOG
+    else if(GPIOx == GPIOG)CRM_GPIOx_PERIPH_CLOCK = CRM_GPIOG_PERIPH_CLOCK;
+#endif /*GPIOG*/
+    else return;
+	
+	gpio_default_para_init(&gpio_init_struct);
+    gpio_init_struct.gpio_pins = GPIO_Pin_x;
+    gpio_init_struct.gpio_drive_strength = GPIO_Drive_x;
+    
+    if(Mode == INPUT)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+    }
+    else if(Mode == INPUT_PULLUP)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_UP;
+    }
+    else if(Mode == INPUT_PULLDOWN)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_DOWN;
+    }
+    else if(Mode == INPUT_ANALOG)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+    }
+    else if(Mode == OUTPUT)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
+    }
+    else if(Mode == OUTPUT_OPEN_DRAIN)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init_struct.gpio_out_type = GPIO_OUTPUT_OPEN_DRAIN;
+    }
+    else if(Mode == OUTPUT_AF_PP)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
+    }
+    else if(Mode == OUTPUT_AF_OD)
+    {
+        gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init_struct.gpio_out_type = GPIO_OUTPUT_OPEN_DRAIN;
+    }
+    else
+    {
+        return;
+    }
+
+    crm_periph_clock_enable(CRM_GPIOx_PERIPH_CLOCK, TRUE);
+    gpio_init(GPIOx, &gpio_init_struct);
 }
 
 void GPIOPin::digitalWrite(DigitalSignal value) {

@@ -9,8 +9,12 @@
  * TODO: Claulate this number while taking into consideration the board/chip.
 */
 #define GPIO_PINS_COUNT 48
-#define IS_VALID_PIN(pin) pin < GPIO_PINS_COUNT
 #define ADC_CHANNEL_X ((uint8_t)0xFF)
+
+#define IS_VALID_PIN(pin) pin < GPIO_PINS_COUNT
+// #define IS_ADC_PIN(Pin) (IS_VALID_PIN(Pin) && PIN_MAP[Pin].ADCx != nullptr && PIN_MAP[Pin].ADC_Channel  != ADC_CHANNEL_X)
+// #define IS_PWM_PIN(Pin) (IS_VALID_PIN(Pin) && PIN_MAP[Pin].TMRx != nullptr && PIN_MAP[Pin].TimerChannel != 0)
+
 
 /** GPIO Pins supported by the MCU board. */
 typedef enum {
@@ -112,6 +116,13 @@ class GPIOPin {
     bool is_pwm() const;
     bool is_ADC() const;
     void set_compare_timer(uint32_t value);
+    void init_pin();
+    void GPIOx_Init(
+        gpio_type* GPIOx,
+        uint16_t GPIO_Pin_x,
+        PinMode Mode,
+        gpio_drive_type GPIO_Drive_x
+    );
   public:
     GPIOPin(PinType p, PinMode mode);
 
