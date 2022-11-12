@@ -10,6 +10,7 @@ WESTUDIO_HEX_UPLOADER = $(WESTUDIO_PATH)/tools/Artery_ISP_Console/0.0.1/WeAct St
 DEFINES =	\
 -DAT32F403ACGU7	\
 -DAT_START_F403A_V1	\
+-DF_CPU=80000000L	\
 
 WARNINGS = -Wall -Wunused -Wuninitialized
 MCU_FLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -O0  $(DEFINES)
@@ -109,8 +110,8 @@ $(ARM)	\
 $(PROG)	\
 $(STARTUP_ENTRY_POINT)	\
 $(LINKING)	\
-# $(TO_HEX)	\
-# $(UPLOAD)	\
+$(TO_HEX)	\
+$(UPLOAD)	\
 
 
 $(PROG_SYS_C):$(SYSTEM_SRC_C)
