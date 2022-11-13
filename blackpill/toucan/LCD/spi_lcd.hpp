@@ -6,6 +6,7 @@
 #include "delay.h"
 #include "gpio_pins.hpp"
 #include "spi.hpp"
+#include "lcd_graphics.hpp"
 
 #define LCD_1IN28_HEIGHT 240
 #define LCD_1IN28_WIDTH 240

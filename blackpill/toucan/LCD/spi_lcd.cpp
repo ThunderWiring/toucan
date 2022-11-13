@@ -70,7 +70,7 @@ void RoundLCD::clearDisplay() {
   set_cursor(0, 0, width - 1,height - 1);
   for(i = 0; i < width; i++){
     for(j = 0; j < height; j++){
-      send_16bit_data(0x001F);
+      send_16bit_data(BLACK);
     }
    }
 }
