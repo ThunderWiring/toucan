@@ -18,28 +18,38 @@
 #define LCD_PIN_RST PA9 // PA9 reset (low active)
 #define LCD_PIN_BL  PB13 // PB13 back light - pwm (or connected directly to the 3.3v)
 
+
+class LCDDriver {
+  private:
+    GPIOPin din, clk, cs, dc, rst;
+    SPI spi;
+
+    void init_spi();
+
+  public:
+    LCDDriver();
+
+    /** writes a command to the LCD driver */
+    void sendCommand(uint8_t cmd);
+    /** writes a byte to the LCD driver */
+    void send8BitData(uint8_t data);
+    void send16BitData(uint16_t data);
+
+    void reset();
+    void initDriver();
+    void setCursor(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end);
+};
+
 /**
  * @brief 1.28 inch round screen
  * 
  */
 class RoundLCD {
   private:
-    GPIOPin din, clk, cs, dc, rst, bl;
-    SPI spi;
+    GPIOPin bl;
     uint16_t height, width;
+    LCDDriver lcd_driver;
 
-    void init_spi();
-    void reset();
-
-    /** writes a command to the LCD driver */
-    void send_command(uint8_t cmd);
-
-    /** writes a byte to the LCD driver */
-    void send_8bit_data(uint8_t data);
-    void send_16bit_data(uint16_t data);
-
-    void init_lcd_driver();
-    void set_cursor(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end);
   public:
     RoundLCD(uint16_t h, uint16_t w);
     

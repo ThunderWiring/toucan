@@ -1,20 +1,44 @@
 #include "spi_lcd.hpp"
 
 RoundLCD::RoundLCD(uint16_t h, uint16_t w) : 
-      din(GPIOPin(LCD_PIN_DIN, OUTPUT_AF_PP)), // not used
-      clk(GPIOPin(LCD_PIN_CLK, OUTPUT_AF_PP)), // not used
-      cs(GPIOPin(LCD_PIN_CS, OUTPUT)),
-      dc(GPIOPin(LCD_PIN_DC, OUTPUT)),
-      rst(GPIOPin(LCD_PIN_RST, OUTPUT)),
       bl(GPIOPin(LCD_PIN_BL, PWM)),
-      spi(SPI(SPI1, SPI_MODE0)),
       height(h),
-      width(w) { 
+      width(w),
+      lcd_driver(LCDDriver()) { 
   bl.PWMWrite(140);
+}
+
+void RoundLCD::initLCD() {
+  lcd_driver.reset();
+  lcd_driver.initDriver();
+}
+
+void RoundLCD::setBackLight(uint16_t brightness) {
+  bl.analogWrite(brightness);
+}
+
+void RoundLCD::clearDisplay() {
+  uint16_t i,j;    
+  lcd_driver.setCursor(0, 0, width - 1,height - 1);
+  for(i = 0; i < width; i++){
+    for(j = 0; j < height; j++){
+      lcd_driver.send16BitData(MAGENTA);
+    }
+   }
+}
+
+
+LCDDriver::LCDDriver() :
+    din(GPIOPin(LCD_PIN_DIN, OUTPUT_AF_PP)), // not used but needed for SPI protocole
+    clk(GPIOPin(LCD_PIN_CLK, OUTPUT_AF_PP)), // not used but needed for SPI protocole
+    cs(GPIOPin(LCD_PIN_CS, OUTPUT)),
+    dc(GPIOPin(LCD_PIN_DC, OUTPUT)),
+    rst(GPIOPin(LCD_PIN_RST, OUTPUT)),
+    spi(SPI(SPI1, SPI_MODE0)) {
   init_spi();
 }
 
-void RoundLCD::init_spi() {
+void LCDDriver::init_spi() {
   spi.init(
     SPI_MODE0,
     SPI_TRANSMIT_FULL_DUPLEX,
@@ -26,7 +50,7 @@ void RoundLCD::init_spi() {
   spi.begin();
 }
 
-void RoundLCD::reset() {
+void LCDDriver::reset() {
   cs.digitalWrite(LOW);
   delay_ms(100);
   rst.digitalWrite(LOW);
@@ -35,20 +59,20 @@ void RoundLCD::reset() {
   delay_ms(100);
 }
 
-void RoundLCD::send_command(uint8_t cmd) {
- cs.digitalWrite(LOW);
- dc.digitalWrite(LOW);
- spi.transfer(cmd);
+void LCDDriver::sendCommand(uint8_t cmd) {
+  cs.digitalWrite(LOW);
+  dc.digitalWrite(LOW);
+  spi.transfer(cmd);
 }
 
-void RoundLCD::send_8bit_data(uint8_t data) {
+void LCDDriver::send8BitData(uint8_t data) {
   cs.digitalWrite(LOW);
   dc.digitalWrite(HIGH);
   spi.transfer(data);
   cs.digitalWrite(HIGH);
 }
-
-void RoundLCD::send_16bit_data(uint16_t data) {
+  
+void LCDDriver::send16BitData(uint16_t data) {
   cs.digitalWrite(LOW);
   dc.digitalWrite(HIGH);
   spi.transfer(data >> 8);
@@ -56,275 +80,256 @@ void RoundLCD::send_16bit_data(uint16_t data) {
   cs.digitalWrite(HIGH);
 }
 
-void RoundLCD::initLCD() {
-  reset();
-  init_lcd_driver();
-}
-
-void RoundLCD::setBackLight(uint16_t brightness) {
-  bl.analogWrite(brightness);
-}
-
-void RoundLCD::clearDisplay() {
-  uint16_t i,j;    
-  set_cursor(0, 0, width - 1,height - 1);
-  for(i = 0; i < width; i++){
-    for(j = 0; j < height; j++){
-      send_16bit_data(BLACK);
-    }
-   }
-}
-
-void RoundLCD::set_cursor(
+void LCDDriver::setCursor(
   uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end) {
-  send_command(0x2a);
-  send_8bit_data(0x00);
-  send_8bit_data(x_start);
-  send_8bit_data(0x00);  
-  send_8bit_data(x_end);/*********Xend-1********/
+  sendCommand(0x2a);
+  send8BitData(0x00);
+  send8BitData(x_start);
+  send8BitData(0x00);  
+  send8BitData(x_end);/*********Xend-1********/
   
-  send_command(0x2b);
-  send_8bit_data(0x00);
-  send_8bit_data(y_start);
-  send_8bit_data(0x00);
-  send_8bit_data(y_end);
+  sendCommand(0x2b);
+  send8BitData(0x00);
+  send8BitData(y_start);
+  send8BitData(0x00);
+  send8BitData(y_end);
 
-  send_command(0x2c);
+  sendCommand(0x2c);
 }
 
-void RoundLCD::init_lcd_driver() {
-  send_command(0xEF);
-	send_command(0xEB);
-	send_8bit_data(0x14); 
+void LCDDriver::initDriver() {
+    sendCommand(0xEF);
+	sendCommand(0xEB);
+	send8BitData(0x14); 
 	
-  send_command(0xFE);			 
-	send_command(0xEF); 
+  sendCommand(0xFE);			 
+	sendCommand(0xEF); 
 
-	send_command(0xEB);	
-	send_8bit_data(0x14); 
+	sendCommand(0xEB);	
+	send8BitData(0x14); 
 
-	send_command(0x84);			
-	send_8bit_data(0x40); 
+	sendCommand(0x84);			
+	send8BitData(0x40); 
 
-	send_command(0x85);			
-	send_8bit_data(0xFF); 
+	sendCommand(0x85);			
+	send8BitData(0xFF); 
 
-	send_command(0x86);			
-	send_8bit_data(0xFF); 
+	sendCommand(0x86);			
+	send8BitData(0xFF); 
 
-	send_command(0x87);			
-	send_8bit_data(0xFF);
+	sendCommand(0x87);			
+	send8BitData(0xFF);
 
-	send_command(0x88);			
-	send_8bit_data(0x0A);
+	sendCommand(0x88);			
+	send8BitData(0x0A);
 
-	send_command(0x89);			
-	send_8bit_data(0x21); 
+	sendCommand(0x89);			
+	send8BitData(0x21); 
 
-	send_command(0x8A);			
-	send_8bit_data(0x00); 
+	sendCommand(0x8A);			
+	send8BitData(0x00); 
 
-	send_command(0x8B);			
-	send_8bit_data(0x80); 
+	sendCommand(0x8B);			
+	send8BitData(0x80); 
 
-	send_command(0x8C);			
-	send_8bit_data(0x01); 
+	sendCommand(0x8C);			
+	send8BitData(0x01); 
 
-	send_command(0x8D);			
-	send_8bit_data(0x01); 
+	sendCommand(0x8D);			
+	send8BitData(0x01); 
 
-	send_command(0x8E);			
-	send_8bit_data(0xFF); 
+	sendCommand(0x8E);			
+	send8BitData(0xFF); 
 
-	send_command(0x8F);			
-	send_8bit_data(0xFF); 
-
-
-	send_command(0xB6);
-	send_8bit_data(0x00);
-	send_8bit_data(0x20);
-
-	send_command(0x36);
-	send_8bit_data(0x08);
-
-	send_command(0x3A);			
-	send_8bit_data(0x05); 
+	sendCommand(0x8F);			
+	send8BitData(0xFF); 
 
 
-	send_command(0x90);			
-	send_8bit_data(0x08);
-	send_8bit_data(0x08);
-	send_8bit_data(0x08);
-	send_8bit_data(0x08); 
+	sendCommand(0xB6);
+	send8BitData(0x00);
+	send8BitData(0x20);
 
-	send_command(0xBD);			
-	send_8bit_data(0x06);
+	sendCommand(0x36);
+	send8BitData(0x08);
+
+	sendCommand(0x3A);			
+	send8BitData(0x05); 
+
+
+	sendCommand(0x90);			
+	send8BitData(0x08);
+	send8BitData(0x08);
+	send8BitData(0x08);
+	send8BitData(0x08); 
+
+	sendCommand(0xBD);			
+	send8BitData(0x06);
 	
-	send_command(0xBC);			
-	send_8bit_data(0x00);	
+	sendCommand(0xBC);			
+	send8BitData(0x00);	
 
-	send_command(0xFF);			
-	send_8bit_data(0x60);
-	send_8bit_data(0x01);
-	send_8bit_data(0x04);
+	sendCommand(0xFF);			
+	send8BitData(0x60);
+	send8BitData(0x01);
+	send8BitData(0x04);
 
-	send_command(0xC3);			
-	send_8bit_data(0x13);
-	send_command(0xC4);			
-	send_8bit_data(0x13);
+	sendCommand(0xC3);			
+	send8BitData(0x13);
+	sendCommand(0xC4);			
+	send8BitData(0x13);
 
-	send_command(0xC9);			
-	send_8bit_data(0x22);
+	sendCommand(0xC9);			
+	send8BitData(0x22);
 
-	send_command(0xBE);			
-	send_8bit_data(0x11); 
+	sendCommand(0xBE);			
+	send8BitData(0x11); 
 
-	send_command(0xE1);			
-	send_8bit_data(0x10);
-	send_8bit_data(0x0E);
+	sendCommand(0xE1);			
+	send8BitData(0x10);
+	send8BitData(0x0E);
 
-	send_command(0xDF);			
-	send_8bit_data(0x21);
-	send_8bit_data(0x0c);
-	send_8bit_data(0x02);
+	sendCommand(0xDF);			
+	send8BitData(0x21);
+	send8BitData(0x0c);
+	send8BitData(0x02);
 
-	send_command(0xF0);   
-	send_8bit_data(0x45);
-	send_8bit_data(0x09);
-	send_8bit_data(0x08);
-	send_8bit_data(0x08);
-	send_8bit_data(0x26);
- 	send_8bit_data(0x2A);
+	sendCommand(0xF0);   
+	send8BitData(0x45);
+	send8BitData(0x09);
+	send8BitData(0x08);
+	send8BitData(0x08);
+	send8BitData(0x26);
+ 	send8BitData(0x2A);
 
- 	send_command(0xF1);    
- 	send_8bit_data(0x43);
- 	send_8bit_data(0x70);
- 	send_8bit_data(0x72);
- 	send_8bit_data(0x36);
- 	send_8bit_data(0x37);  
- 	send_8bit_data(0x6F);
+ 	sendCommand(0xF1);    
+ 	send8BitData(0x43);
+ 	send8BitData(0x70);
+ 	send8BitData(0x72);
+ 	send8BitData(0x36);
+ 	send8BitData(0x37);  
+ 	send8BitData(0x6F);
 
 
- 	send_command(0xF2);   
- 	send_8bit_data(0x45);
- 	send_8bit_data(0x09);
- 	send_8bit_data(0x08);
- 	send_8bit_data(0x08);
- 	send_8bit_data(0x26);
- 	send_8bit_data(0x2A);
+ 	sendCommand(0xF2);   
+ 	send8BitData(0x45);
+ 	send8BitData(0x09);
+ 	send8BitData(0x08);
+ 	send8BitData(0x08);
+ 	send8BitData(0x26);
+ 	send8BitData(0x2A);
 
- 	send_command(0xF3);   
- 	send_8bit_data(0x43);
- 	send_8bit_data(0x70);
- 	send_8bit_data(0x72);
- 	send_8bit_data(0x36);
- 	send_8bit_data(0x37); 
- 	send_8bit_data(0x6F);
+ 	sendCommand(0xF3);   
+ 	send8BitData(0x43);
+ 	send8BitData(0x70);
+ 	send8BitData(0x72);
+ 	send8BitData(0x36);
+ 	send8BitData(0x37); 
+ 	send8BitData(0x6F);
 
-	send_command(0xED);	
-	send_8bit_data(0x1B); 
-	send_8bit_data(0x0B); 
+	sendCommand(0xED);	
+	send8BitData(0x1B); 
+	send8BitData(0x0B); 
 
-	send_command(0xAE);			
-	send_8bit_data(0x77);
+	sendCommand(0xAE);			
+	send8BitData(0x77);
 	
-	send_command(0xCD);			
-	send_8bit_data(0x63);		
+	sendCommand(0xCD);			
+	send8BitData(0x63);		
 
 
-	send_command(0x70);			
-	send_8bit_data(0x07);
-	send_8bit_data(0x07);
-	send_8bit_data(0x04);
-	send_8bit_data(0x0E); 
-	send_8bit_data(0x0F); 
-	send_8bit_data(0x09);
-	send_8bit_data(0x07);
-	send_8bit_data(0x08);
-	send_8bit_data(0x03);
+	sendCommand(0x70);			
+	send8BitData(0x07);
+	send8BitData(0x07);
+	send8BitData(0x04);
+	send8BitData(0x0E); 
+	send8BitData(0x0F); 
+	send8BitData(0x09);
+	send8BitData(0x07);
+	send8BitData(0x08);
+	send8BitData(0x03);
 
-	send_command(0xE8);			
-	send_8bit_data(0x34);
+	sendCommand(0xE8);			
+	send8BitData(0x34);
 
-	send_command(0x62);			
-	send_8bit_data(0x18);
-	send_8bit_data(0x0D);
-	send_8bit_data(0x71);
-	send_8bit_data(0xED);
-	send_8bit_data(0x70); 
-	send_8bit_data(0x70);
-	send_8bit_data(0x18);
-	send_8bit_data(0x0F);
-	send_8bit_data(0x71);
-	send_8bit_data(0xEF);
-	send_8bit_data(0x70); 
-	send_8bit_data(0x70);
+	sendCommand(0x62);			
+	send8BitData(0x18);
+	send8BitData(0x0D);
+	send8BitData(0x71);
+	send8BitData(0xED);
+	send8BitData(0x70); 
+	send8BitData(0x70);
+	send8BitData(0x18);
+	send8BitData(0x0F);
+	send8BitData(0x71);
+	send8BitData(0xEF);
+	send8BitData(0x70); 
+	send8BitData(0x70);
 
-	send_command(0x63);			
-	send_8bit_data(0x18);
-	send_8bit_data(0x11);
-	send_8bit_data(0x71);
-	send_8bit_data(0xF1);
-	send_8bit_data(0x70); 
-	send_8bit_data(0x70);
-	send_8bit_data(0x18);
-	send_8bit_data(0x13);
-	send_8bit_data(0x71);
-	send_8bit_data(0xF3);
-	send_8bit_data(0x70); 
-	send_8bit_data(0x70);
+	sendCommand(0x63);			
+	send8BitData(0x18);
+	send8BitData(0x11);
+	send8BitData(0x71);
+	send8BitData(0xF1);
+	send8BitData(0x70); 
+	send8BitData(0x70);
+	send8BitData(0x18);
+	send8BitData(0x13);
+	send8BitData(0x71);
+	send8BitData(0xF3);
+	send8BitData(0x70); 
+	send8BitData(0x70);
 
-	send_command(0x64);			
-	send_8bit_data(0x28);
-	send_8bit_data(0x29);
-	send_8bit_data(0xF1);
-	send_8bit_data(0x01);
-	send_8bit_data(0xF1);
-	send_8bit_data(0x00);
-	send_8bit_data(0x07);
+	sendCommand(0x64);			
+	send8BitData(0x28);
+	send8BitData(0x29);
+	send8BitData(0xF1);
+	send8BitData(0x01);
+	send8BitData(0xF1);
+	send8BitData(0x00);
+	send8BitData(0x07);
 
-	send_command(0x66);			
-	send_8bit_data(0x3C);
-	send_8bit_data(0x00);
-	send_8bit_data(0xCD);
-	send_8bit_data(0x67);
-	send_8bit_data(0x45);
-	send_8bit_data(0x45);
-	send_8bit_data(0x10);
-	send_8bit_data(0x00);
-	send_8bit_data(0x00);
-	send_8bit_data(0x00);
+	sendCommand(0x66);			
+	send8BitData(0x3C);
+	send8BitData(0x00);
+	send8BitData(0xCD);
+	send8BitData(0x67);
+	send8BitData(0x45);
+	send8BitData(0x45);
+	send8BitData(0x10);
+	send8BitData(0x00);
+	send8BitData(0x00);
+	send8BitData(0x00);
 
-	send_command(0x67);			
-	send_8bit_data(0x00);
-	send_8bit_data(0x3C);
-	send_8bit_data(0x00);
-	send_8bit_data(0x00);
-	send_8bit_data(0x00);
-	send_8bit_data(0x01);
-	send_8bit_data(0x54);
-	send_8bit_data(0x10);
-	send_8bit_data(0x32);
-	send_8bit_data(0x98);
+	sendCommand(0x67);			
+	send8BitData(0x00);
+	send8BitData(0x3C);
+	send8BitData(0x00);
+	send8BitData(0x00);
+	send8BitData(0x00);
+	send8BitData(0x01);
+	send8BitData(0x54);
+	send8BitData(0x10);
+	send8BitData(0x32);
+	send8BitData(0x98);
 
-	send_command(0x74);			
-	send_8bit_data(0x10);	
-	send_8bit_data(0x85);	
-	send_8bit_data(0x80);
-	send_8bit_data(0x00); 
-	send_8bit_data(0x00); 
-	send_8bit_data(0x4E);
-	send_8bit_data(0x00);					
+	sendCommand(0x74);			
+	send8BitData(0x10);	
+	send8BitData(0x85);	
+	send8BitData(0x80);
+	send8BitData(0x00); 
+	send8BitData(0x00); 
+	send8BitData(0x4E);
+	send8BitData(0x00);					
 	
-  send_command(0x98);			
-	send_8bit_data(0x3e);
-	send_8bit_data(0x07);
+  sendCommand(0x98);			
+	send8BitData(0x3e);
+	send8BitData(0x07);
 
-	send_command(0x35);	
-	send_command(0x21);
+	sendCommand(0x35);	
+	sendCommand(0x21);
 
-	send_command(0x11);
+	sendCommand(0x11);
 	delay_ms(120);
-	send_command(0x29);
+	sendCommand(0x29);
 	delay_ms(20);
 }
