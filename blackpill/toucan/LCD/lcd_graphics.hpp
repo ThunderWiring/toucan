@@ -1,6 +1,8 @@
 #ifndef __TOUCAN_LCD_GRAPHICS_H__
 #define __TOUCAN_LCD_GRAPHICS_H__
 
+#include "lcd_driver.hpp"
+
 /**
  * @brief Define basic color codes supported by the LCD.
  */
@@ -26,9 +28,34 @@
 #define LGRAYBLUE     0XA651
 #define LBBLUE        0X2B12 
 
-
 #define IMAGE_BACKGROUND    WHITE
 #define FONT_FOREGROUND     BLACK
 #define FONT_BACKGROUND     WHITE
+
+typedef uint16_t Color;
+typedef enum {
+  PX_1X1 = 1, 
+  PX_2X2, 
+  PX_3X3
+} PixelWidth;
+
+struct Point2d {
+  uint16_t x, y;
+};
+
+/** 
+ * Paints a shape to the LCD
+*/
+class LCDPaint {
+  private:
+    LCDDriver lcd_driver;
+    uint16_t hight, width;
+
+    bool is_point_within_boundaries(Point2d& pt) const;
+    void set_pixel(Point2d& pt, Color color);
+  public:
+    LCDPaint(LCDDriver& driver, uint16_t h, uint16_t w);
+    void paintPoint(Point2d& pt, PixelWidth px_width, Color color);
+};
 
 #endif /* __TOUCAN_LCD_GRAPHICS_H__ */
