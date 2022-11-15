@@ -49,7 +49,7 @@ struct Point2d {
 class LCDPaint {
   private:
     LCDDriver lcd_driver;
-    uint16_t hight, width;
+    uint16_t height, width;
 
     bool is_point_within_boundaries(Point2d& pt) const;
     void set_pixel(Point2d& pt, Color color);

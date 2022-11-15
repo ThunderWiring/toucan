@@ -1,12 +1,18 @@
 #include "lcd_graphics.hpp"
 
-LCDPaint::LCDPaintLCDPaint(LCDDriver& driver, uint16_t h, uint16_t w) : 
+LCDPaint::LCDPaint(LCDDriver& driver, uint16_t h, uint16_t w) : 
   lcd_driver(driver),
-  hight(h), width(w) {}
+  height(h), width(w) {}
 
 void LCDPaint::paintPoint(Point2d& pt, PixelWidth px_width, Color color) {
   if (!is_point_within_boundaries(pt)) {
     return;
+  }
+  for (int16_t row = pt.x; row < pt.x + px_width; ++row) {
+    for (int16_t col = pt.y; col < pt.y + px_width; ++col) {
+      Point2d pxl = {row, col};
+      set_pixel(pxl, color);
+    }
   }
 }
 
