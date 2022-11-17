@@ -18,6 +18,19 @@ extern "C" {
 uint8_t report_buf[USBD_CUSTOM_IN_MAXPACKET_SIZE];
 CustomUSBHID usb = CustomUSBHID();
 
+void testLCD(RoundLCD& lcd) {
+  lcd.initLCD();
+  lcd.setBackLight(1000);
+  lcd.clearDisplay();
+  
+  Point2d pt1(50,50), pt2(50,80), pt3(70,100);
+  Line line1(PX_2X2, RED, pt1, pt2);
+  Line line2(PX_2X2, LBBLUE, pt1, pt3);
+
+  lcd.drawShape(line1);
+  lcd.drawShape(line2);
+}
+
 int main(void) {
   system_clock_config();
   delay_init();
@@ -26,9 +39,7 @@ int main(void) {
   led_init();
 
   RoundLCD lcd = RoundLCD(LCD_1IN28_HEIGHT, LCD_1IN28_WIDTH);
-  lcd.initLCD();
-  lcd.setBackLight(1000);
-  lcd.clearDisplay();
+  testLCD(lcd);
   
   usb.initUSB();
   usb.connect();

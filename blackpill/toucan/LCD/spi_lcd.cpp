@@ -4,7 +4,9 @@ RoundLCD::RoundLCD(uint16_t h, uint16_t w) :
       bl(GPIOPin(LCD_PIN_BL, PWM)),
       height(h),
       width(w),
-      lcd_driver(LCDDriver()) { 
+      painter(LCDPaint(nullptr, h, w)) { 
+  lcd_driver = LCDDriver();
+  painter = LCDPaint(&lcd_driver, h, w);
   bl.PWMWrite(140);
 }
 
@@ -27,3 +29,6 @@ void RoundLCD::clearDisplay() {
    }
 }
 
+void RoundLCD::drawShape(Shape& shape) {
+  shape.render(&painter);
+}

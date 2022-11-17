@@ -41,6 +41,15 @@ typedef enum {
 
 struct Point2d {
   uint16_t x, y;
+
+  Point2d(uint16_t _x, uint16_t _y);
+  Point2d(Point2d& p);
+
+
+  /** Compares 2 points on the x coord. */
+  bool isLessX(const Point2d& p) const {
+    return x < p.x;
+  }
 };
 
 /** 
@@ -48,14 +57,18 @@ struct Point2d {
 */
 class LCDPaint {
   private:
-    LCDDriver lcd_driver;
+    LCDDriver* lcd_driver;
     uint16_t height, width;
 
     bool is_point_within_boundaries(Point2d& pt) const;
+    bool is_point_within_boundaries(uint16_t x, uint16_t y) const;
     void set_pixel(Point2d& pt, Color color);
+    void set_pixel(uint16_t x, uint16_t y, Color color);
+
   public:
-    LCDPaint(LCDDriver& driver, uint16_t h, uint16_t w);
+    LCDPaint(LCDDriver* driver, uint16_t h, uint16_t w);
     void paintPoint(Point2d& pt, PixelWidth px_width, Color color);
+    void paintPoint(uint16_t x, uint16_t y, PixelWidth px_width, Color color);
 };
 
 #endif /* __TOUCAN_LCD_GRAPHICS_H__ */

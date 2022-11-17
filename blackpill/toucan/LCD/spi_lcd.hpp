@@ -1,7 +1,7 @@
 #ifndef __SPI_LCD_H__
 #define __SPI_LCD_H__
 
-#include "lcd_graphics.hpp"
+#include "shapes.hpp"
 #include "lcd_driver.hpp"
 
 #define LCD_1IN28_HEIGHT 240
@@ -16,6 +16,7 @@ class RoundLCD {
     GPIOPin bl;
     uint16_t height, width;
     LCDDriver lcd_driver;
+    LCDPaint painter;
 
   public:
     RoundLCD(uint16_t h, uint16_t w);
@@ -29,5 +30,7 @@ class RoundLCD {
 
     /** Clears all pixels. */
     void clearDisplay();
+
+    void drawShape(Shape& shape);
 };
 #endif /* __SPI_LCD_H__ */
