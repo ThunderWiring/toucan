@@ -23,9 +23,9 @@ void testLCD(RoundLCD& lcd) {
   lcd.setBackLight(1000);
   lcd.clearDisplay();
   
-  Point2d pt1(50,50), pt2(50,80), pt3(70,100);
+  Point2d pt1(50,50), pt2(50,80), pt3(70,80);
   Line line1(PX_2X2, RED, pt1, pt2);
-  Line line2(PX_2X2, LBBLUE, pt1, pt3);
+  Line line2(PX_1X1, LBBLUE, pt1, pt3);
 
   lcd.drawShape(line1);
   lcd.drawShape(line2);

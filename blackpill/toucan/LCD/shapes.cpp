@@ -21,21 +21,24 @@ void Line::render(LCDPaint* painter) {
     }
     return;
   }
-  // Bresenham line algorithm
-  Point2d p0 = pt1.isLessX(pt2) ? pt1 : pt2;
-  Point2d p1 = pt1.isLessX(pt2) ? pt2 : pt1;
-  
-  int16_t dx = p1.x - p0.x;
-  int16_t dy = p1.y - p0.y;
-  int16_t D = 2 * dy- dx;
-  int16_t y = p0.y;
 
-  for (uint16_t x = p0.x; p0.x < p1.x ; x++) {
+  // Bresenham line algorithm
+  // impl taken from https://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
+  int dx = (int)pt2.x - (int)pt1.x;
+  int dy = (int)pt2.y - (int)pt1.y;
+  
+  int sx = dx > 0 ? 1 : -1;
+  int sy = dy > 0 ? 1 : -1;
+  int err = (dx>dy ? dx : -dy)/2, e2;
+  
+  volatile uint16_t y = pt1.y;
+  volatile uint16_t x = pt1.x;
+  
+  for(;;){
     painter->paintPoint(x, y, px_width, color);
-    if (D > 0) {
-      y++;
-      D -= 2 * dx;
-    }
-    D += 2* dy;
+    if (x==pt2.x && y==pt2.y) break;
+    e2 = err;
+    if (e2 >-dx) { err -= dy; x += sx; }
+    if (e2 < dy) { err += dx; y += sy; }
   }
 }
