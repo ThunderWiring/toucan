@@ -28,7 +28,5 @@ static ALIGNED_HEAD uint8_t g_usbd_custom_hid_report[USBD_CUSHID_SIZ_REPORT_DESC
   0xC0,                // EndCollection()
 };
 
-uint8_t* USB_HID__getReportDesc();
-const uint8_t USB_HID__getReportSize();
 
 #endif /* __CUSTOM_HID_REPORT_DESC_H__ */
