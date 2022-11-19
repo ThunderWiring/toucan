@@ -1,0 +1,32 @@
+# Report descriptor for a single image
+# there are 64 bytes of data in the report
+# +-------+-----------+------+------+--------------------+
+# | Frame | pct index | rows | cols | 60 bytes of pixels |
+# +-------+-----------+------+------+--------------------+
+# Frame: ID of the frame being transmitted. 
+#        This is a preparation to support multiple frames transmiting
+# pct index: the serial order index of this current report, in order to 
+#            correctly construct the frame
+# rows, cols: dimention of the image (frame)
+
+[[usagePage]]
+id = 0xFF00
+name = 'Image-Stream'
+  [[usagePage.usage]]
+  id = 1
+  name = 'Image'
+  types = ['CA']
+  
+  [[usagePage.usage]]
+  id = 2
+  name = 'ImagePixels'
+  types = ['Sel', 'OOC', 'MC']
+
+[[applicationCollection]]
+usage = ['Image-Stream', 'Image']
+    [[applicationCollection.inputReport]]
+     [[applicationCollection.inputReport.variableItem]]
+        usage = ['Image-Stream', 'ImagePixels']
+        sizeInBits = 8
+
+      
