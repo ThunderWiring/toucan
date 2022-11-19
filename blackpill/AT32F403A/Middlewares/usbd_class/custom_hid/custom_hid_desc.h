@@ -34,6 +34,7 @@ extern "C" {
 
 #include "custom_hid_class.h"
 #include "usbd_core.h"
+#include "custom_hid_report_desc.h"
 
 /** @addtogroup AT32F403A_407_middlewares_usbd_class
   * @{
@@ -63,7 +64,6 @@ extern "C" {
   * @brief usb descriptor size define
   */
 #define USBD_CUSHID_CONFIG_DESC_SIZE     41
-#define USBD_CUSHID_SIZ_REPORT_DESC      22
 #define USBD_CUSHID_SIZ_STRING_LANGID    4
 #define USBD_CUSHID_SIZ_STRING_SERIAL    0x1A
 
@@ -97,10 +97,87 @@ extern "C" {
 #define MCU_ID2                          (0x1FFFF7EC)
 #define MCU_ID3                          (0x1FFFF7F0)
 
+
+
+/**
+  * @brief usb hid descriptor
+  */
+#if defined ( __ICCARM__ ) /* iar compiler */
+  #pragma data_alignment=4
+#endif
+static ALIGNED_HEAD uint8_t g_custom_hid_usb_desc[9] ALIGNED_TAIL =
+{
+  0x09,                                  /* bLength: size of HID descriptor in bytes */
+  HID_CLASS_DESC_HID,                    /* bDescriptorType: HID descriptor type */
+  LBYTE(CUSHID_BCD_NUM),
+  HBYTE(CUSHID_BCD_NUM),                    /* bcdHID: HID class specification release number */
+  0x00,                                  /* bCountryCode: hardware target conutry */
+  0x01,                                  /* bNumDescriptors: number of HID class descriptor to follow */
+  HID_CLASS_DESC_REPORT,                 /* bDescriptorType: report descriptor type */
+  LBYTE(sizeof(g_usbd_custom_hid_report)),
+  HBYTE(sizeof(g_usbd_custom_hid_report)),      /* wDescriptorLength: total length of reprot descriptor */
+};
+
+
+/**
+  * @brief usb configuration standard descriptor
+  */
+#if defined ( __ICCARM__ ) /* iar compiler */
+  #pragma data_alignment=4
+#endif
+static ALIGNED_HEAD uint8_t g_usbd_configuration[USBD_CUSHID_CONFIG_DESC_SIZE] ALIGNED_TAIL =
+{
+  USB_DEVICE_CFG_DESC_LEN,               /* bLength: configuration descriptor size */
+  USB_DESCIPTOR_TYPE_CONFIGURATION,      /* bDescriptorType: configuration */
+  LBYTE(USBD_CUSHID_CONFIG_DESC_SIZE),          /* wTotalLength: bytes returned */
+  HBYTE(USBD_CUSHID_CONFIG_DESC_SIZE),          /* wTotalLength: bytes returned */
+  0x01,                                  /* bNumInterfaces: 1 interface */
+  0x01,                                  /* bConfigurationValue: configuration value */
+  0x00,                                  /* iConfiguration: index of string descriptor describing
+                                            the configuration */
+  0xC0,                                  /* bmAttributes: self powered */
+  0x32,                                  /* MaxPower 100 mA: this current is used for detecting vbus */
+
+  USB_DEVICE_IF_DESC_LEN,                /* bLength: interface descriptor size */
+  USB_DESCIPTOR_TYPE_INTERFACE,          /* bDescriptorType: interface descriptor type */
+  0x00,                                  /* bInterfaceNumber: number of interface */
+  0x00,                                  /* bAlternateSetting: alternate set */
+  0x02,                                  /* bNumEndpoints: number of endpoints */
+  USB_CLASS_CODE_HID,                    /* bInterfaceClass: class code hid */
+  0x00,                                  /* bInterfaceSubClass: subclass code */
+  0x00,                                  /* bInterfaceProtocol: protocol code */
+  0x00,                                  /* iInterface: index of string descriptor */
+
+  0x09,                                  /* bLength: size of HID descriptor in bytes */
+  HID_CLASS_DESC_HID,                    /* bDescriptorType: HID descriptor type */
+  LBYTE(CUSHID_BCD_NUM),
+  HBYTE(CUSHID_BCD_NUM),                 /* bcdHID: HID class specification release number */
+  0x00,                                  /* bCountryCode: hardware target conutry */
+  0x01,                                  /* bNumDescriptors: number of HID class descriptor to follow */
+  HID_CLASS_DESC_REPORT,                 /* bDescriptorType: report descriptor type */
+  LBYTE(sizeof(g_usbd_custom_hid_report)),
+  HBYTE(sizeof(g_usbd_custom_hid_report)), /* wDescriptorLength: total length of reprot descriptor */
+
+  USB_DEVICE_EPT_LEN,                    /* bLength: size of endpoint descriptor in bytes */
+  USB_DESCIPTOR_TYPE_ENDPOINT,           /* bDescriptorType: endpoint descriptor type */
+  USBD_CUSTOM_HID_IN_EPT,                /* bEndpointAddress: the address of endpoint on usb device described by this descriptor */
+  USB_EPT_DESC_INTERRUPT,                /* bmAttributes: endpoint attributes */
+  LBYTE(USBD_CUSTOM_IN_MAXPACKET_SIZE),
+  HBYTE(USBD_CUSTOM_IN_MAXPACKET_SIZE),  /* wMaxPacketSize: maximum packe size this endpoint */
+  CUSHID_BINTERVAL_TIME,                                  /* bInterval: interval for polling endpoint for data transfers */
+
+  USB_DEVICE_EPT_LEN,                    /* bLength: size of endpoint descriptor in bytes */
+  USB_DESCIPTOR_TYPE_ENDPOINT,           /* bDescriptorType: endpoint descriptor type */
+  USBD_CUSTOM_HID_OUT_EPT,               /* bEndpointAddress: the address of endpoint on usb device described by this descriptor */
+  USB_EPT_DESC_INTERRUPT,                /* bmAttributes: endpoint attributes */
+  LBYTE(USBD_CUSTOM_OUT_MAXPACKET_SIZE),
+  HBYTE(USBD_CUSTOM_OUT_MAXPACKET_SIZE),  /* wMaxPacketSize: maximum packe size this endpoint */
+  CUSHID_BINTERVAL_TIME,                    /* bInterval: interval for polling endpoint for data transfers */
+};
+
 /**
   * @}
   */
-extern uint8_t g_usbd_custom_hid_report[USBD_CUSHID_SIZ_REPORT_DESC];
 extern uint8_t g_custom_hid_usb_desc[9];
 extern usbd_desc_handler custom_hid_desc_handler;
 
