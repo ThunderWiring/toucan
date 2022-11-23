@@ -221,7 +221,7 @@ static usb_sts_type class_ept0_rx_handler(void *udev)
   if( pcshid->hid_state == HID_REQ_SET_REPORT)
   {
     /* hid buffer process */
-    usb_hid_buf_process(udev, pcshid->hid_set_report, recv_len);
+    pudev->class_handler->process_buf(udev, pcshid->hid_set_report, recv_len);
     pcshid->hid_state = 0;
   }
 
@@ -261,7 +261,7 @@ static usb_sts_type class_out_handler(void *udev, uint8_t ept_num)
   uint32_t recv_len = usbd_get_recv_len(pudev, ept_num);
 
   /* hid buffer process */
-  usb_hid_buf_process(udev, pcshid->g_rxhid_buff, recv_len);
+    pudev->class_handler->process_buf(udev, pcshid->g_rxhid_buff, recv_len);
 
   /* start receive next packet */
   usbd_ept_recv(pudev, USBD_CUSTOM_HID_OUT_EPT, pcshid->g_rxhid_buff, recv_len);

@@ -3,9 +3,19 @@
 extern "C" usbd_class_handler custom_hid_class_handler;
 extern "C" usbd_desc_handler custom_hid_desc_handler;
 
+void readFramPacketFromUSBHost(void *udev, uint8_t *report, uint16_t len) {
+
+}
+
 CustomUSBHID::CustomUSBHID() {
   class_handler = custom_hid_class_handler;
   desc_handler = custom_hid_desc_handler;
+}
+
+CustomUSBHID::CustomUSBHID(USBPacketBufferCallback callback) {
+  class_handler = custom_hid_class_handler;
+  desc_handler = custom_hid_desc_handler;
+  custom_hid_class_handler.process_buf = callback;
 }
 
 void CustomUSBHID::initUSB() {

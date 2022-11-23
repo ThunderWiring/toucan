@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 uint8_t report_buf[USBD_CUSTOM_IN_MAXPACKET_SIZE];
-CustomUSBHID usb = CustomUSBHID();
+CustomUSBHID usb = CustomUSBHID(readFramPacketFromUSBHost);
 
 void testLCD(RoundLCD& lcd) {
   lcd.initLCD();

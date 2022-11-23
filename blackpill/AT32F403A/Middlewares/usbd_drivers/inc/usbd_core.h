@@ -101,6 +101,7 @@ typedef struct
   usb_sts_type (*sof_handler)(void *udev);                           /*!< usb class sof handler */
   usb_sts_type (*event_handler)(void *udev, usbd_event_type event);  /*!< usb class event handler */
   void         *pdata;                                               /*!< usb class data pointer */
+  void(*process_buf)(void *udev, uint8_t *report, uint16_t len);     /*!< custom process handler for input */
 }usbd_class_handler;
 
 /**
