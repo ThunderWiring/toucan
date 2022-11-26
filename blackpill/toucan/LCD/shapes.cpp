@@ -2,7 +2,7 @@
 
 #define MIN(a, b) (a) < (b) ? (a) : (b)
 #define MAX(a, b) (a) > (b) ? (a) : (b)
-#define ASSERT_PAINTER_PTR(painter_ptr) if ((painter_ptr) == nullptr) return
+#define ASSERT_NONNULL_PTR(painter_ptr) if ((painter_ptr) == nullptr) return
 
 Shape::Shape(PixelWidth _px_width, Color clr) :
   color(clr), px_width(_px_width) {}
@@ -12,7 +12,7 @@ Line::Line(PixelWidth px_width, Color clr, Point2d& p1, Point2d& p2):
   }
 
 void Line::render(LCDPaint* painter) {
-  ASSERT_PAINTER_PTR(painter);
+  ASSERT_NONNULL_PTR(painter);
   
   if(pt1.x == pt2.x) {
     uint16_t start_x = MIN(pt1.x, pt2.x), start_y = MIN(pt1.y, pt2.y);
@@ -47,15 +47,16 @@ void Line::render(LCDPaint* painter) {
 
 Image::Image(Color* pxls,  uint16_t height, uint16_t width) : 
   Shape(PX_1X1, BLACK), /* Those values are not needed for Image class, so can be anything. */
-  rows(height), cols(width) {
+  rows(height), cols(width), image(pxls) {
 
   }
 
 void Image::render(LCDPaint* painter) {
-  ASSERT_PAINTER_PTR(painter);
+  ASSERT_NONNULL_PTR(painter);
+  ASSERT_NONNULL_PTR(image);
   for (uint16_t row; row < row; row++) {
     for (uint16_t col; col < cols; col++) {
-      // paint pixel
+      painter->paintPoint(col, row, PX_1X1, image[col][row]);
     }
   }
 }

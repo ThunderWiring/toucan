@@ -26,9 +26,10 @@ class Line : public Shape {
 class Image : public Shape {
   private:
   uint16_t rows, cols;
+  Color* image;
   public:
     Image(Color* pxls, uint16_t height, uint16_t width);
-    virtual void render(LCDPaint* painter);  
+    virtual void render(LCDPaint* painter);
 };
 
 #endif /* __TOUCAN_SHAPES_H__ */
