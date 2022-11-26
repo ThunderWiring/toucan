@@ -3,6 +3,7 @@
 #define MIN(a, b) (a) < (b) ? (a) : (b)
 #define MAX(a, b) (a) > (b) ? (a) : (b)
 #define ASSERT_PAINTER_PTR(painter_ptr) if ((painter_ptr) == nullptr) return
+
 Shape::Shape(PixelWidth _px_width, Color clr) :
   color(clr), px_width(_px_width) {}
 

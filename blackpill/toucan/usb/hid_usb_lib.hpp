@@ -10,6 +10,9 @@
 /** pointer to function for processing USB packets upon RX event. */
 typedef  void (*USBPacketBufferCallback)(void *udev, uint8_t *report, uint16_t len);
 
+/**
+ * @brief Reads image bytes from the host device
+ */
 void readFramPacketFromUSBHost(void *udev, uint8_t *report, uint16_t len);
 
 
