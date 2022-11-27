@@ -44,6 +44,6 @@ class HID_USB:
           usb.util.endpoint_direction(e.bEndpointAddress) == \
           usb.util.ENDPOINT_OUT)
 
-  def write_to_endpoint(self, ep: Endpoint, data) -> None:
-    return self.dev.write(0x01, data, 100)
+  def write_to_endpoint(self, ep: Endpoint, data, timeout = 100) -> None:
+    return ep.write(data, timeout)
 
