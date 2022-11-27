@@ -18,14 +18,27 @@ communication session for sending and receiving data packets.
 VENDOR_ID = 0x2E3C
 PRODUCT_ID = 0x5745
 
-dev = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
-if dev is None:
-    raise ValueError('Device not found')
+class HID_USB:
+  def __init__(self, vendor=VENDOR_ID, prod_id=PRODUCT_ID):
+    self.vendor = vendor
+    self.product_id = prod_id
+  
+  def connect_device(self):
+    self.dev = usb.core.find(idVendor=self.vendor, idProduct=self.product_id)
+    if self.dev is None:
+        raise ValueError('Device not found')
+    self.dev.set_configuration()
+    self.cfg = self.dev.get_active_configuration()
+  
+  def write_to_device(self, data):
+    return self.dev.write(0x01, data, 100)
 
-dev.set_configuration()
-cfg = dev.get_active_configuration()
-intf = cfg[(0,0)]
 
 pct = [0 for _ in range(64)]
 pct[0] = 11
-print(f'send bytes = {dev.write(0x01, pct, 100)}')
+
+usb_dev = HID_USB()
+usb_dev.connect_device()
+sent = usb_dev.write_to_device(pct)
+print(f'send bytes = {sent}')
+

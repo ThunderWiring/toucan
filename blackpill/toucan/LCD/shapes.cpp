@@ -56,7 +56,7 @@ void Image::render(LCDPaint* painter) {
   ASSERT_NONNULL_PTR(image);
   for (uint16_t row; row < row; row++) {
     for (uint16_t col; col < cols; col++) {
-      painter->paintPoint(col, row, PX_1X1, image[col][row]);
+      painter->paintPoint(col, row, PX_1X1, *(image + (row*cols) + col));
     }
   }
 }
