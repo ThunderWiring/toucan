@@ -2,6 +2,8 @@ import usb.core
 import usb.util
 import usb.backend.libusb1
 
+from usb.core import Device, Endpoint, Interface, Configuration
+
 # For this to work need to install libusb (pip3 install libusb)
 # Then copy the libusb-1.0.dll from 
 # C:\Users\Bassam\AppData\Local\Programs\Python\Python39\Lib\site-packages\libusb\_platform\_windows\ x64
@@ -24,21 +26,36 @@ class HID_USB:
     self.product_id = prod_id
   
   def connect_device(self):
-    self.dev = usb.core.find(idVendor=self.vendor, idProduct=self.product_id)
+    self.dev:Device  = usb.core.find(idVendor=self.vendor, idProduct=self.product_id)
     if self.dev is None:
         raise ValueError('Device not found')
     self.dev.set_configuration()
     self.cfg = self.dev.get_active_configuration()
   
-  def write_to_device(self, data):
+  def get_active_config(self)-> Configuration:
+    return self.dev.get_active_configuration()
+
+  def get_output_endpoint(self, intf: Interface) -> Endpoint:
+    return  usb.util.find_descriptor(
+      intf,
+      # match the first OUT endpoint
+      custom_match = \
+      lambda e: \
+          usb.util.endpoint_direction(e.bEndpointAddress) == \
+          usb.util.ENDPOINT_OUT)
+
+  def write_to_endpoint(self, ep: Endpoint, data) -> None:
     return self.dev.write(0x01, data, 100)
 
 
-pct = [0 for _ in range(64)]
-pct[0] = 11
-
 usb_dev = HID_USB()
 usb_dev.connect_device()
-sent = usb_dev.write_to_device(pct)
+cfg = usb_dev.get_active_config()
+intf = cfg[(0,0)]
+ep = usb_dev.get_output_endpoint(intf)
+
+pct = [0 for _ in range(64)]
+pct[0] = 11
+sent = usb_dev.write_to_endpoint(ep, pct)
 print(f'send bytes = {sent}')
 
