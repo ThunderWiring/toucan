@@ -1,3 +1,4 @@
+import array
 from typing import List
 import usb.core
 import usb.util
@@ -63,13 +64,13 @@ class FrameDataPacket:
     frames = len(data_bytes) // self.data_pcket_quota
     packets = []
     for k in range(frames):
-      packets.append([k] + header + data_bytes[data_pivot:data_pivot + self.data_pcket_quota])
+      packets.append([k % 256] + header + data_bytes[data_pivot:data_pivot + self.data_pcket_quota])
       data_pivot += self.data_pcket_quota
     
     if len(data_bytes) % self.data_pcket_quota > 0:
       res_data = [0] * self.data_pcket_quota
       res_data[0::] = data_bytes[frames * self.data_pcket_quota - 1::]
-      packets.append([k] + header + res_data)
+      packets.append([0] + header + res_data)
 
     return packets
 
@@ -87,16 +88,23 @@ class USBImageWriter(HID_USB):
              correctly construct the frame
   rows, cols: dimention of the image (frame)
   '''
+  MAX_IMAGE_PACKET_SIZE = 57
   def __init__(self, vendor=VENDOR_ID, prod_id=PRODUCT_ID):
     HID_USB.__init__(self, vendor, prod_id)
 
   def write_to_endpoint(self, ep: Endpoint, data, timeout = 100) -> None:
-    packets = FrameDataPacket(frame_idx=0, data_pcket_quota = 60)
+    packets = FrameDataPacket(frame_idx=0, data_pcket_quota = self.MAX_IMAGE_PACKET_SIZE)
     packets = packets.get_packets(
       data, # pixel values of the image
       header = [240,240], # header of the packet which is the rows/cols of the image
     )
     total_written = 0
+    print(f'packets = {len(packets)}, 1st pct: {len(packets[0])}')
     for pct in packets:
-      total_written += ep.write(pct, timeout)
+      try:
+        array.array('B', pct)
+        total_written += ep.write(pct, timeout)
+      except:
+        print(f'pct = {pct}')
+    print(f'total_written = {total_written}')
     return total_written
