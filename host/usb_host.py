@@ -1,3 +1,4 @@
+from typing import List
 import usb.core
 import usb.util
 import usb.backend.libusb1
@@ -47,3 +48,55 @@ class HID_USB:
   def write_to_endpoint(self, ep: Endpoint, data, timeout = 100) -> None:
     return ep.write(data, timeout)
 
+
+class FrameDataPacket:
+  '''
+  Given an array of data bytes, this class slices it into smaller data packets to be 
+  written effectvely to the device, while appending a header if neccessarly.
+  '''
+  def __init__(self, frame_idx, data_pcket_quota: int) -> None:
+    self.frame_idx = frame_idx
+    self.data_pcket_quota = data_pcket_quota
+
+  def get_packets(self, data_bytes: List, header: List = []) -> List[List]:
+    data_pivot = 0
+    frames = len(data_bytes) // self.data_pcket_quota
+    packets = []
+    for k in range(frames):
+      packets.append([k] + header + data_bytes[data_pivot:data_pivot + self.data_pcket_quota])
+      data_pivot += self.data_pcket_quota
+    
+    if len(data_bytes) % self.data_pcket_quota > 0:
+      res_data = [0] * self.data_pcket_quota
+      res_data[0::] = data_bytes[frames * self.data_pcket_quota - 1::]
+      packets.append([k] + header + res_data)
+
+    return packets
+
+class USBImageWriter(HID_USB):
+  '''
+  Sends image frame via USB to the connected device.
+  Each data packet written to the device is of the follwing structure:
+  
+  +-------+-----------+------+------+--------------------+
+  | Frame | pct_index | rows | cols | 60 bytes of pixels |
+  +-------+-----------+------+------+--------------------+
+  Frame: ID of the frame being transmitted. 
+         This is a preparation to support multiple frames transmiting
+  pct index: the serial order index of this current report, in order to 
+             correctly construct the frame
+  rows, cols: dimention of the image (frame)
+  '''
+  def __init__(self, vendor=VENDOR_ID, prod_id=PRODUCT_ID):
+    HID_USB.__init__(self, vendor, prod_id)
+
+  def write_to_endpoint(self, ep: Endpoint, data, timeout = 100) -> None:
+    packets = FrameDataPacket(frame_idx=0, data_pcket_quota = 60)
+    packets = packets.get_packets(
+      data, # pixel values of the image
+      header = [240,240], # header of the packet which is the rows/cols of the image
+    )
+    total_written = 0
+    for pct in packets:
+      total_written += ep.write(pct, timeout)
+    return total_written
