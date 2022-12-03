@@ -4,9 +4,9 @@
 #include "shapes.hpp"
 #include "lcd_driver.hpp"
 
-#define LCD_1IN28_HEIGHT 240
-#define LCD_1IN28_WIDTH 240
-
+static constexpr uint16_t LCD_1IN28_HEIGHT = 240;
+static constexpr uint16_t LCD_1IN28_WIDTH = 240;
+static constexpr uint8_t LCD_BACKLIGHT = 1000;
 /**
  * @brief 1.28 inch round screen
  * 

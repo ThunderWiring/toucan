@@ -33,6 +33,7 @@ $(wildcard $(ROOT_PATH)/toucan/usb/*.cpp)	\
 $(wildcard $(ROOT_PATH)/toucan/LCD/*.cpp)	\
 $(wildcard $(ROOT_PATH)/toucan/gpio/*.cpp)	\
 $(wildcard $(ROOT_PATH)/toucan/SPI/*.cpp)	\
+$(wildcard $(ROOT_PATH)/toucan/robot/*.cpp)	\
 
 CXX_LOCAL_LIBS	=	\
 -I$(ROOT_PATH)	\
@@ -40,6 +41,7 @@ CXX_LOCAL_LIBS	=	\
 -I$(ROOT_PATH)/toucan/LCD	\
 -I$(ROOT_PATH)/toucan/gpio	\
 -I$(ROOT_PATH)/toucan/SPI	\
+-I$(ROOT_PATH)/toucan/robot	\
 
 ####################################################
 # Firmaware - BSP (Board Support Pack)
