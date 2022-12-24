@@ -7,8 +7,7 @@
 #include "custom_hid_desc.h"
 #include "board.h"
 
-#include "hid_usb_lib.hpp"
-#include "spi_lcd.hpp"
+#include "robot_driver.hpp"
 
 extern uint8_t toggle_speed_from_host;
 #ifdef __cplusplus

@@ -112,8 +112,8 @@ $(ARM)	\
 $(PROG)	\
 $(STARTUP_ENTRY_POINT)	\
 $(LINKING)	\
-$(TO_HEX)	\
-$(UPLOAD)	\
+# $(TO_HEX)	\
+# $(UPLOAD)	\
 
 
 $(PROG_SYS_C):$(SYSTEM_SRC_C)
