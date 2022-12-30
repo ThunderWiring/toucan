@@ -4,7 +4,7 @@ Robot::Robot() :
   lcd(RoundLCD(LCD_1IN28_HEIGHT, LCD_1IN28_WIDTH)) { }
 
 void Robot::initRobot(USBPacketBufferCallback callback) {
-  usb = CustomUSBHID(callback);
+  usb = CustomUSBHID();
   usb.initUSB();
   usb.connect();
 
