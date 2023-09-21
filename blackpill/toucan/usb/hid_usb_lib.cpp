@@ -3,13 +3,6 @@
 extern "C" usbd_class_handler custom_hid_class_handler;
 extern "C" usbd_desc_handler custom_hid_desc_handler;
 
-void readFramPacketFromUSBHost(void *udev, uint8_t *report, uint16_t len) {
-  uint32_t i_index;
-  usbd_core_type *pudev = (usbd_core_type *)udev;
-  custom_hid_type *pcshid = (custom_hid_type *)pudev->class_handler->pdata;
-  pcshid->g_rxhid_buff; // buffer containing the data
-}
-
 CustomUSBHID::CustomUSBHID() {
   class_handler = custom_hid_class_handler;
   desc_handler = custom_hid_desc_handler;

@@ -1,10 +1,16 @@
 #include "robot.hpp"
 
 Robot::Robot() :
-  lcd(RoundLCD(LCD_1IN28_HEIGHT, LCD_1IN28_WIDTH)) { }
+  lcd(RoundLCD(LCD_1IN28_HEIGHT, LCD_1IN28_WIDTH)) { 
+    usb = CustomUSBHID();
+  }
+
+Robot::Robot(USBPacketBufferCallback callback) : 
+  lcd(RoundLCD(LCD_1IN28_HEIGHT, LCD_1IN28_WIDTH))
+  ,usb(CustomUSBHID(callback))   {  }
 
 void Robot::initRobot(USBPacketBufferCallback callback) {
-  usb = CustomUSBHID();
+  // usb = CustomUSBHID(callback);
   usb.initUSB();
   usb.connect();
 
@@ -18,6 +24,10 @@ void Robot::diplayOnLCD(uint8_t* data, int data_len) {
     return;
   }
   uint8_t pct_idx = data[1], rows = data[2], cols = data[3], *pixels = data + 4;
-  // TODO: create an image shape from the pixels
-  // TODO: draw the image shape using the lcd api. Need to cast to uint16_t
+  Image img = Image(pixels, rows, cols);
+  lcd.drawShape(img);
+}
+
+usbd_core_type* Robot::getUsbDevice() {
+  return usb.getDevice();
 }

@@ -9,26 +9,11 @@
 
 #include "robot_driver.hpp"
 
-extern uint8_t toggle_speed_from_host;
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-uint8_t report_buf[USBD_CUSTOM_IN_MAXPACKET_SIZE];
-CustomUSBHID usb = CustomUSBHID(readFramPacketFromUSBHost);
-
-void testLCD(RoundLCD& lcd) {
-  lcd.initLCD();
-  lcd.setBackLight(1000);
-  lcd.clearDisplay();
-  
-  Point2d pt1(50,50), pt2(50,80), pt3(70,80);
-  Line line1(PX_2X2, RED, pt1, pt2);
-  Line line2(PX_1X1, LBBLUE, pt1, pt3);
-
-  lcd.drawShape(line1);
-  lcd.drawShape(line2);
-}
+Robot* robot = Robot_getInstance();
 
 int main(void) {
   system_clock_config();
@@ -37,16 +22,12 @@ int main(void) {
   button_exint_init();
   led_init();
 
-  RoundLCD lcd = RoundLCD(LCD_1IN28_HEIGHT, LCD_1IN28_WIDTH);
-  testLCD(lcd);
-  
-  usb.initUSB();
-  usb.connect();
+  Robot_init(robot);
   
   while (1)
   {
     led_toggle();
-    delay_ms(toggle_speed_from_host * DELAY);
+    delay_ms( DELAY);
   }
   return 0;
 }
@@ -58,7 +39,7 @@ int main(void) {
  */
 void USBFS_L_CAN1_RX0_IRQHandler(void)
 {
-  usbd_irq_handler(usb.getDevice());
+  usbd_irq_handler(robot->getUsbDevice());
 }
 
 /**

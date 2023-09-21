@@ -14,19 +14,19 @@ id = 0xFF00
 name = 'Image-Stream'
   [[usagePage.usage]]
   id = 1
-  name = 'Image'
+  name = 'FrameDataPacket'
   types = ['CA']
-  
   [[usagePage.usage]]
-  id = 2
+  id = 6
   name = 'ImagePixels'
   types = ['Sel', 'OOC', 'MC']
 
 [[applicationCollection]]
-usage = ['Image-Stream', 'Image']
-    [[applicationCollection.inputReport]]
-     [[applicationCollection.inputReport.variableItem]]
-        usage = ['Image-Stream', 'ImagePixels']
-        sizeInBits = 8
+usage = ['Image-Stream', 'FrameDataPacket']
+     [[applicationCollection.inputReport]]
+      id=105
+      [[applicationCollection.inputReport.variableItem]]
+          usage = ['Image-Stream', 'ImagePixels']
+          sizeInBits = 32
 
       

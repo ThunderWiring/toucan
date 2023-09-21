@@ -11,6 +11,8 @@ private:
   CustomUSBHID usb;
 public:
   Robot();
+  Robot(USBPacketBufferCallback callback);
+
   /**
    * @brief Initializes the devices on the robot like USB interface, LCD,..etc.
    */
@@ -23,6 +25,8 @@ public:
    * @param data_len number of pixels in the given buffer.
    */
   void diplayOnLCD(uint8_t* data, int data_len);
+
+  usbd_core_type* getUsbDevice();
 };
 
 #endif /* __ROBOT_TOUCAN_H__ */

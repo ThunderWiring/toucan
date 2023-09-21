@@ -1,5 +1,5 @@
 WESTUDIO_PATH	=	C:\\Users/Bassam/AppData/Local/Arduino15/packages/WeActStudio
-GNU_TOOLCHAIN_PATH = C:\\MyProjects/GNUARMEmbeddedToolchain/54_2016q3/bin
+GNU_TOOLCHAIN_PATH = C:\\MyProjects/BlackPill/GNUARMEmbeddedToolchain/54_2016q3/bin
 GXX_CC =  $(GNU_TOOLCHAIN_PATH)/arm-none-eabi-g++
 GCC_CC =  $(GNU_TOOLCHAIN_PATH)/arm-none-eabi-gcc
 ARM_CC =  $(GNU_TOOLCHAIN_PATH)/arm-none-eabi-ar
@@ -112,9 +112,8 @@ $(ARM)	\
 $(PROG)	\
 $(STARTUP_ENTRY_POINT)	\
 $(LINKING)	\
-# $(TO_HEX)	\
-# $(UPLOAD)	\
-
+$(TO_HEX)	\
+$(UPLOAD)	\
 
 $(PROG_SYS_C):$(SYSTEM_SRC_C)
 	$(GCC_CC)	$(CFLAGS)	$(SYSTEM_LIBS)	-c $(SYSTEM_SRC_C)	&\
@@ -151,4 +150,3 @@ $(TO_HEX):
 
 $(UPLOAD):
 	 $(WESTUDIO_HEX_UPLOADER)	$(ROOT_PATH)/$(OUTFOLDER)/$(HEX_OUT)
-

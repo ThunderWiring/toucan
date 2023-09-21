@@ -45,18 +45,17 @@ void Line::render(LCDPaint* painter) {
 }
 
 
-Image::Image(Color* pxls,  uint16_t height, uint16_t width) : 
+Image::Image(uint8_t* pxls,  uint16_t height, uint16_t width) : 
   Shape(PX_1X1, BLACK), /* Those values are not needed for Image class, so can be anything. */
-  rows(height), cols(width), image(pxls) {
-
-  }
+  rows(height), cols(width), image(pxls) { }
 
 void Image::render(LCDPaint* painter) {
   ASSERT_NONNULL_PTR(painter);
   ASSERT_NONNULL_PTR(image);
   for (uint16_t row; row < row; row++) {
     for (uint16_t col; col < cols; col++) {
-      painter->paintPoint(col, row, PX_1X1, *(image + (row*cols) + col));
+      Color color = *(image + (row*cols) + col) << 8 | *(image + (row*cols) + col + 1);
+      painter->paintPoint(col, row, PX_1X1, color);
     }
   }
 }

@@ -4,9 +4,8 @@
 #include "robot.hpp"
 
 // /** singleton instance for the robot. */
-static Robot robot_singleton = Robot();
 
-Robot* const Robot_getInstance();
+Robot* Robot_getInstance();
 
 // TODO: should pass a struct of configs like the USB packets handler?
 void Robot_init(Robot* robot);

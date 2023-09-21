@@ -1,19 +1,22 @@
 
+from typing import List
 from usb_host import USBImageWriter
-import array
+import itertools
 
-def get_example_image_data(height: int, width: int):
+def get_example_image_data(height: int, width: int) -> List:
   r'''
     generate sample image with the given dims
     the image is 3 colors (RGB) each color is one third.
+    Each color is 16 bit.
   '''
-  red = 125
-  green = 250
-  blue = 80
+  # red = 0xF800
+  # green = 0x07E0
+  # blue = 0x001F  
   img_size = height * width
-  img = [red for _ in range(img_size // 3)]
-  img += [green for _ in range(img_size // 3)]
-  img += [blue for _ in range(img_size - 2 * img_size // 3)]
+  img = [[0xF8, 0x0]for _ in range(img_size // 6)] #red
+  img += [[0x07,0xE0] for _ in range(img_size // 6)] #green
+  img += [[0x0, 0x1F] for _ in range(img_size - img_size // 3)] #blue
+  img =  list(itertools.chain.from_iterable(img))
   return img
 
 usb_dev = USBImageWriter()

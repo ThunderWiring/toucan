@@ -10,12 +10,6 @@
 /** pointer to function for processing USB packets upon RX event. */
 typedef  void (*USBPacketBufferCallback)(void *udev, uint8_t *report, uint16_t len);
 
-/**
- * @brief Reads image bytes from the host device
- */
-void readFramPacketFromUSBHost(void *udev, uint8_t *report, uint16_t len);
-
-
 class CustomUSBHID {
   private:
     usbd_core_type usb_core_dev;

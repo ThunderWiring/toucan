@@ -93,7 +93,8 @@ class USBImageWriter(HID_USB):
     HID_USB.__init__(self, vendor, prod_id)
 
   def write_to_endpoint(self, ep: Endpoint, data, timeout = 100) -> None:
-    packets = FrameDataPacket(frame_idx=0, data_pcket_quota = self.MAX_IMAGE_PACKET_SIZE)
+    packets = FrameDataPacket(
+      frame_idx=0, data_pcket_quota = self.MAX_IMAGE_PACKET_SIZE)
     packets = packets.get_packets(
       data, # pixel values of the image
       header = [240,240], # header of the packet which is the rows/cols of the image
@@ -104,7 +105,7 @@ class USBImageWriter(HID_USB):
       try:
         array.array('B', pct)
         total_written += ep.write(pct, timeout)
-      except:
-        print(f'pct = {pct}')
+      except Exception as e:
+        print(f'excep {e}')
     print(f'total_written = {total_written}')
     return total_written

@@ -26,9 +26,19 @@ class Line : public Shape {
 class Image : public Shape {
   private:
   uint16_t rows, cols;
-  Color* image;
+  uint8_t* image;
   public:
-    Image(Color* pxls, uint16_t height, uint16_t width);
+  /**
+   * @brief Construct a new Image object. Each color is represented by 16 bits
+   * 
+   * @param pxls buffer of 8 bit bytes for representing the image pixel colors. 
+   *             This equalibrium must be satisfied: 
+   *             pxls_length = 2 * height * width
+   *             because each color is 16 bits, but the buffer is 8 bits.
+   * @param height number of rows in the image
+   * @param width number of columns in the image.
+   */
+    Image(uint8_t* pxls, uint16_t height, uint16_t width);
     virtual void render(LCDPaint* painter);
 };
 
